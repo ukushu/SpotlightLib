@@ -13,7 +13,7 @@ public struct SpotlightConfig {
     let ignoredFiles: [String]
 }
 
-public struct SpotLight2 {
+public struct SpotLight {
     private static func getRecentFiles(_ config: SpotlightConfig) -> ([MDItemPair]) {
         let mdItems = getMDs(config)
         
