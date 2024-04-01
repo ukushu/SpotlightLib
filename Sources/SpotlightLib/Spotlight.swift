@@ -33,7 +33,7 @@ public struct SpotLight {
         return mdPairs2.filter{ !$0.url.FS.info.isHidden }
     }
     
-    static func getRecentFilesR(_ config: SpotlightConfig) -> R<([MDItemPair])> {
+    public static func getRecentFilesR(_ config: SpotlightConfig) -> R<([MDItemPair])> {
         if config.watchList.count == 0 {
             return .failure(WTF("No items in Watch List") )
         }
