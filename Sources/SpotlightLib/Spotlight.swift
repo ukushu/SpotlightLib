@@ -4,7 +4,7 @@ import SwiftUI
 import Essentials
 
 public struct SpotlightConfig {
-    let daysCount: DaysCount
+    let daysCount: SlDaysRange
     
     let watchList: [String]
     
@@ -186,7 +186,7 @@ public class MDItemPair {
     }
 }
 
-enum DaysCount {
+public enum SlDaysRange {
     case last(days: Int)
 //    case daysRange(from: Date, to: Date)
 }
