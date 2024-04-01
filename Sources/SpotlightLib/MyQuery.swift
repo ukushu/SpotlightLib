@@ -38,7 +38,7 @@ internal struct MyQuery {
     }
     
     private static func getQueryStr(_ config: SpotlightConfig) -> String {
-        if case .last(let days) = config.daysCount {
+        if case .last(let days) = config.daysRange {
             return """
                    ( ( \( timeQueryPart(days: days ) )
                    && (!( \( extensionsPart(exts: config.ignoredExts.appending(contentsOf: ["app"]) ) ) ) ))
