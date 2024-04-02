@@ -58,7 +58,7 @@ internal struct MyQuery {
     }
     
     private static func getSearchScopes(_ config: SpotlightConfig) -> (CFArray, Int) {
-        var searchScopesGlobal: [String] = config.watchList.filter{ $0.FS.exist }.map { $0 }
+        let searchScopesGlobal: [String] = config.watchList.filter{ $0.FS.exist }.map { $0 }
         
         return ((searchScopesGlobal as CFArray), searchScopesGlobal.count )
     }
