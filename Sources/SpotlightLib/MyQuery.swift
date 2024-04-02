@@ -72,6 +72,8 @@ internal func getQueryStr(_ config: SpotlightConfig) -> String {
     }
     
     if case .daysRange(let fromDay, let toDay) = config.daysRange {
+        fatalError("Does not work properly yet")
+        
         return """
                ( ( \( timeQueryPart(from: fromDay, to: toDay ) )
                && (!( \( extensionsPart(exts: config.ignoredExts.appending(contentsOf: ["app"]) ) ) ) ))
@@ -82,13 +84,12 @@ internal func getQueryStr(_ config: SpotlightConfig) -> String {
     return ""
 }
 
-func timeQueryPart(lastDays days: Int) -> String {
+internal func timeQueryPart(lastDays days: Int) -> String {
     return "InRange(kMDItemContentCreationDate,$time.today(-\(days)d),$time.today(+1d)) || InRange(kMDItemFSContentChangeDate,$time.today(-\(days)d),$time.today(+1d)) || InRange(kMDItemFSCreationDate,$time.today(-\(days)d),$time.today(+1d)) || InRange(kMDItemDateAdded,$time.today(-\(days)d),$time.today(+1d))"
 }
 
-func timeQueryPart(from fromDay: Int, to toDay: Int) -> String {
+internal func timeQueryPart(from fromDay: Int, to toDay: Int) -> String {
     let toStr = (1 - fromDay) >= 0 ? "+\(1 - fromDay)" : "\(1 - fromDay)"
-    
     
     return "InRange(kMDItemContentCreationDate,$time.today(-\(toDay)d),$time.today(\(toStr)d)) || InRange(kMDItemFSContentChangeDate,$time.today(-\(toDay)d),$time.today(\(toStr)d)) || InRange(kMDItemFSCreationDate,$time.today(-\(toDay)d),$time.today(\(toStr)d)) || InRange(kMDItemDateAdded,$time.today(-\(toDay)d),$time.today(\(toStr)d))"
 }

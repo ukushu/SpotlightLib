@@ -82,7 +82,22 @@ final class SpotlightLibTests: XCTestCase {
         XCTAssertEqual(results1, results2)
     }
     
-    func test_fromToRangeQuery() throws {
+    func test_fromToRange_p2() throws {
+        let configOrig = SpotlightConfig(daysRange: .last(days: 50),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],
+                                      ignoredFiles: []
+        )
+        
+        let resultsOrig = SpotLight.getRecentFilesR(configOrig).maybeSuccess!.map{ $0.item.path }
+        
+        let text0 = getQueryStr(configOrig)
+        print(text0)
+        print("------------")
+        
+        XCTAssertEqual(resultsOrig, resultsOrig.distinct())
+        
         let config1 = SpotlightConfig(daysRange: .daysRange(fromDaysAgo: 0, toDaysAgo: 10),
                                       watchList: watchlist,
                                       ignoredExts: [],
@@ -90,7 +105,58 @@ final class SpotlightLibTests: XCTestCase {
                                       ignoredFiles: []
         )
         
-        let config2 = SpotlightConfig(daysRange: .last(days: 10),
+        let results1 = SpotLight.getRecentFilesR(config1).maybeSuccess!.map{ $0.item.path }
+        
+        let text1 = getQueryStr(config1)
+        print(text1)
+        print("------------")
+        XCTAssertEqual(results1, results1.distinct())
+        
+        let config2 = SpotlightConfig(daysRange: .daysRange(fromDaysAgo: 11, toDaysAgo: 50),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],
+                                      ignoredFiles: []
+        )
+        
+        let results2 = SpotLight.getRecentFilesR(config2).maybeSuccess!.map{ $0.item.path }
+        
+        
+        let text2 = getQueryStr(config2)
+        print(text2)
+        print("------------")
+        XCTAssertEqual(results2, results2.distinct())
+//        
+//        let config3 = SpotlightConfig(daysRange: .daysRange(fromDaysAgo: 51, toDaysAgo: 100),
+//                                      watchList: watchlist,
+//                                      ignoredExts: [],
+//                                      ignoredDirs: [],
+//                                      ignoredFiles: []
+//        )
+//        
+//        let results3 = SpotLight.getRecentFilesR(config3).maybeSuccess!.map{ $0.item.path }
+        
+        
+//        let text3 = getQueryStr(config3)
+//        print(text3)
+//        print("------------")
+//        XCTAssertEqual(results3, results3.distinct())
+        
+        let resultsCombined = results1.appending(contentsOf: results2)//.appending(contentsOf: results3)
+        
+        XCTAssertEqual(resultsOrig.count, resultsCombined.count)
+//        XCTAssertEqual(resultsOrig, resultsCombined)
+    }
+    
+    func test_fromToRangeQuery() throws {
+        let config1 = SpotlightConfig(daysRange: .daysRange(fromDaysAgo: 0, toDaysAgo: 100),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],
+                                      ignoredFiles: []
+        )
+        
+        let config2 = SpotlightConfig(daysRange: .last(days: 100),
                                       watchList: watchlist,
                                       ignoredExts: [],
                                       ignoredDirs: [],
@@ -101,6 +167,30 @@ final class SpotlightLibTests: XCTestCase {
         let text2 = getQueryStr(config2)
         
         XCTAssertEqual(text1, text2)
+    }
+    
+    func test_fromToRangeQuery2() throws {
+        let configOrig = SpotlightConfig(daysRange: .last(days: 100),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],
+                                      ignoredFiles: []
+        )
+        
+        let resultsOrig = SpotLight.getRecentFilesR(configOrig).maybeSuccess!.map{ $0.item.path }
+        
+        XCTAssertEqual(resultsOrig, resultsOrig.distinct())
+        
+        let config1 = SpotlightConfig(daysRange: .daysRange(fromDaysAgo: 0, toDaysAgo: 100),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],
+                                      ignoredFiles: []
+        )
+        
+        let results1 = SpotLight.getRecentFilesR(config1).maybeSuccess!.map{ $0.item.path }
+        
+        XCTAssertEqual(resultsOrig.count, results1.count)
     }
 }
 
