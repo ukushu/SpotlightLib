@@ -25,7 +25,9 @@ let package = Package(
             ]),
         .testTarget(
             name: "SpotlightLibTests",
-            dependencies: ["SpotlightLib"])
+            dependencies: [
+                "SpotlightLib"
+            ])
     ]
     
 //    targets: [

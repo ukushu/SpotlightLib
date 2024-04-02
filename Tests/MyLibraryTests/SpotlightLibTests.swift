@@ -1,6 +1,7 @@
 import XCTest
 @testable import SpotlightLib
 
+
 final class SpotlightLibTests: XCTestCase {
     func test_sync_async_call_sameResults() throws {
         let config = SpotlightConfig(daysRange: .last(days: 10),
@@ -54,6 +55,53 @@ final class SpotlightLibTests: XCTestCase {
         
         XCTAssertEqual(results1.count, results2.count)
     }
+    
+    ///IMPORTANT!
+    ///If this test failed - make sure you have file modified today!
+    ///And 10 days ago!!!!
+    ///This is unstable test!
+    func test_fromToRange() throws {
+        let config1 = SpotlightConfig(daysRange: .daysRange(fromDaysAgo: 0, toDaysAgo: 10),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],
+                                      ignoredFiles: []
+        )
+        
+        let results1 = SpotLight.getRecentFilesR(config1).maybeSuccess!.map{ $0.item.path }
+        
+        let config2 = SpotlightConfig(daysRange: .last(days: 10),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],
+                                      ignoredFiles: []
+        )
+        
+        let results2 = SpotLight.getRecentFilesR(config2).maybeSuccess!.map{ $0.item.path }
+        
+        XCTAssertEqual(results1, results2)
+    }
+    
+    func test_fromToRangeQuery() throws {
+        let config1 = SpotlightConfig(daysRange: .daysRange(fromDaysAgo: 0, toDaysAgo: 10),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],
+                                      ignoredFiles: []
+        )
+        
+        let config2 = SpotlightConfig(daysRange: .last(days: 10),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],
+                                      ignoredFiles: []
+        )
+        
+        let text1 = getQueryStr(config1)
+        let text2 = getQueryStr(config2)
+        
+        XCTAssertEqual(text1, text2)
+    }
 }
 
 ///////////
@@ -75,3 +123,40 @@ let watchlist = [
 "/Users/uks/My Drive",
 "/Users/uks/Recordings"
 ]
+
+fileprivate extension MDItem {
+    var latestDate: Date {
+        var dates: [Date] = []
+        
+//        if let date = self.dateAdded {
+//            dates.append(date)
+//        }
+        
+        if let date = self.dateContentModif {
+            dates.append(date)
+        }
+        
+        if let date = self.dateCreate {
+            dates.append(date)
+        }
+        
+        if let date = self.dateLastAttrChange {
+            dates.append(date)
+        }
+        
+//        if let date = self.dateLastUse {
+//            dates.append(date)
+//        }
+        
+        return dates.max()!
+    }
+}
+
+fileprivate extension Date {
+    func removingTimeStamp() -> Date {
+        guard let date = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: self))
+        else { fatalError("Failed to strip time from Date object") }
+        
+        return date
+    }
+}

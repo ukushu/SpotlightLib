@@ -16,3 +16,14 @@ public struct SpotlightConfig {
         self.ignoredFiles = ignoredFiles
     }
 }
+
+public enum SlDaysRange {
+    case last(days: Int)
+    
+    /// (Usage examples below)
+    ///
+    /// fromDaysAgo: 0, toDaysAgo: 10 - from today to 10 days ago; range
+    ///
+    /// fromDaysAgo: 5,  toDaysAgo: 10 - from 5 days ago to 10 days ago range
+    case daysRange(fromDaysAgo: Int, toDaysAgo: Int)
+}

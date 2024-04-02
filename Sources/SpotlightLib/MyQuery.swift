@@ -37,26 +37,6 @@ internal struct MyQuery {
         return query
     }
     
-    private static func getQueryStr(_ config: SpotlightConfig) -> String {
-        if case .last(let days) = config.daysRange {
-            return """
-                   ( ( \( timeQueryPart(days: days ) )
-                   && (!( \( extensionsPart(exts: config.ignoredExts.appending(contentsOf: ["app"]) ) ) ) ))
-                   )
-                   """
-        }
-        
-        return ""
-    }
-    
-    private static  func timeQueryPart(days: Int) -> String {
-        return "InRange(kMDItemContentCreationDate,$time.today(-\(days)d),$time.today(+1d)) || InRange(kMDItemFSContentChangeDate,$time.today(-\(days)d),$time.today(+1d)) || InRange(kMDItemFSCreationDate,$time.today(-\(days)d),$time.today(+1d)) || InRange(kMDItemDateAdded,$time.today(-\(days)d),$time.today(+1d))"
-    }
-    
-    private static func extensionsPart(exts: [String]) -> String {
-        exts.map{ "(_kMDItemFileName = \"*.\($0)\"c)" }.joined(separator: " || ")
-    }
-    
     private static func getSearchScopes(_ config: SpotlightConfig) -> (CFArray, Int) {
         let searchScopesGlobal: [String] = config.watchList.filter{ $0.FS.exist }.map { $0 }
         
@@ -76,4 +56,43 @@ internal struct MyQuery {
             kMDItemContentCreationDate
          ] as CFArray
     }
+}
+
+////////////////
+//HELPERS
+////////////////
+
+internal func getQueryStr(_ config: SpotlightConfig) -> String {
+    if case .last(let days) = config.daysRange {
+        return """
+               ( ( \( timeQueryPart(lastDays: days ) )
+               && (!( \( extensionsPart(exts: config.ignoredExts.appending(contentsOf: ["app"]) ) ) ) ))
+               )
+               """
+    }
+    
+    if case .daysRange(let fromDay, let toDay) = config.daysRange {
+        return """
+               ( ( \( timeQueryPart(from: fromDay, to: toDay ) )
+               && (!( \( extensionsPart(exts: config.ignoredExts.appending(contentsOf: ["app"]) ) ) ) ))
+               )
+               """
+    }
+    
+    return ""
+}
+
+func timeQueryPart(lastDays days: Int) -> String {
+    return "InRange(kMDItemContentCreationDate,$time.today(-\(days)d),$time.today(+1d)) || InRange(kMDItemFSContentChangeDate,$time.today(-\(days)d),$time.today(+1d)) || InRange(kMDItemFSCreationDate,$time.today(-\(days)d),$time.today(+1d)) || InRange(kMDItemDateAdded,$time.today(-\(days)d),$time.today(+1d))"
+}
+
+func timeQueryPart(from fromDay: Int, to toDay: Int) -> String {
+    let toStr = (1 - fromDay) >= 0 ? "+\(1 - fromDay)" : "\(1 - fromDay)"
+    
+    
+    return "InRange(kMDItemContentCreationDate,$time.today(-\(toDay)d),$time.today(\(toStr)d)) || InRange(kMDItemFSContentChangeDate,$time.today(-\(toDay)d),$time.today(\(toStr)d)) || InRange(kMDItemFSCreationDate,$time.today(-\(toDay)d),$time.today(\(toStr)d)) || InRange(kMDItemDateAdded,$time.today(-\(toDay)d),$time.today(\(toStr)d))"
+}
+
+func extensionsPart(exts: [String]) -> String {
+    exts.map{ "(_kMDItemFileName = \"*.\($0)\"c)" }.joined(separator: " || ")
 }
