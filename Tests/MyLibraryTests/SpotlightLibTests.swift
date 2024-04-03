@@ -3,6 +3,26 @@ import XCTest
 
 
 final class SpotlightLibTests: XCTestCase {
+    func test_blablabla() throws {
+        let config = SpotlightConfig(daysRange: .last(days: 10),
+                                      watchList: watchlist,
+                                      ignoredExts: [],
+                                      ignoredDirs: [],//["/Users/uks/Desktop"],
+                                      ignoredFiles: []
+        )
+        
+        let blablabla = URL.userHome.appendingPathComponent("Desktop").appendingPathComponent("BLA-BLA-BLA")
+        blablabla.makeSureDirExist()
+        
+        XCTAssertTrue(blablabla.exists)
+        
+        let results1 = SpotLight.getRecentFilesR(config).maybeSuccess!
+        
+        let a = results1.map { $0.url.path }.filter { $0.contains("BLA-BLA-BLA") }
+        
+        XCTAssertTrue(a.count == 1)
+    }
+    
     func test_sync_async_call_sameResults() throws {
         let config = SpotlightConfig(daysRange: .last(days: 10),
                                       watchList: watchlist,
